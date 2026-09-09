@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A.I. Genesis: Pink Neon Protocol</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #12000a;
+      --panel-bg: rgba(28, 3, 18, 0.88);
+      --pink-primary: #ff007f;
+      --pink-light: #ff66b2;
+      --pink-hover: #ff0055;
+      --pink-glow: #ff1493;
+      --pink-dark: #3a001e;
+      --text-main: #ffe6f2;
+      --text-muted: #ff99cc;
+      --border-color: #ff007f;
+      --danger: #ff0033;
+      --success: #00ffcc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 50% 0%, rgba(255, 0, 127, 0.35) 0px, transparent 75%),
+        radial-gradient(at 100% 100%, rgba(255, 20, 147, 0.2) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(58, 0, 30, 0.8) 0px, transparent 60%);
+      color: var(--text-main);
+      font-family: 'Rajdhani', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      z-index: 10;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    .bg-particles {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--pink-light);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--pink-primary);
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      50% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    .game-container {
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 760px;
+      padding: 35px;
+      box-shadow: 0 0 35px rgba(255, 0, 127, 0.4), inset 0 0 20px rgba(255, 0, 127, 0.15);
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      background: linear-gradient(45deg, var(--pink-primary), transparent, var(--pink-light));
+      border-radius: 23px;
+      z-index: -1;
+      opacity: 0.6;
+      animation: pulseGlow 4s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { opacity: 0.4; filter: blur(2px); }
+      100% { opacity: 0.8; filter: blur(6px); }
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 2px solid var(--pink-dark);
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      font-size: 2.5rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      text-shadow: 0 0 10px var(--pink-primary), 0 0 25px var(--pink-glow), 0 0 40px var(--pink-primary);
+      animation: glitchText 3s infinite;
+    }
+
+    .header p {
+      font-size: 1.05rem;
+      color: var(--pink-light);
+      letter-spacing: 2px;
+      margin-top: 5px;
+      text-shadow: 0 0 8px rgba(255, 102, 178, 0.6);
+    }
+
+    @keyframes glitchText {
+      0%, 90%, 100% { transform: translate(0); }
+      92% { transform: translate(-2px, 1px); text-shadow: 2px 0 var(--danger), -2px 0 var(--pink-light); }
+      94% { transform: translate(2px, -1px); text-shadow: -2px 0 var(--danger), 2px 0 var(--pink-light); }
+      96% { transform: translate(-1px, -2px); }
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      background: rgba(18, 0, 10, 0.7);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid var(--pink-dark);
+      box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.2);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 8px var(--pink-primary);
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin-top: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 0, 127, 0.3);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--pink-primary);
+      box-shadow: 0 0 10px var(--pink-primary);
+      transition: width 0.5s ease, background-color 0.5s ease;
+    }
+
+    .story-card {
+      background: rgba(0, 0, 0, 0.5);
+      border-left: 4px solid var(--pink-primary);
+      padding: 22px;
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 25px;
+      min-height: 150px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 0, 127, 0.1);
+      position: relative;
+    }
+
+    .story-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      color: var(--pink-light);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px var(--pink-primary);
+    }
+
+    .story-text {
+      line-height: 1.6;
+      font-size: 1.15rem;
+      color: #fff;
+      min-height: 60px;
+    }
+
+    .choices-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn-choice {
+      background: linear-gradient(90deg, rgba(255, 0, 127, 0.25) 0%, rgba(58, 0, 30, 0.4) 100%);
+      color: #fff;
+      border: 1px solid var(--pink-primary);
+      padding: 18px 22px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.1);
+    }
+
+    .btn-choice::before {
+      content: '✦';
+      margin-right: 12px;
+      color: var(--pink-light);
+      font-size: 1rem;
+      transition: transform 0.2s ease, color 0.2s ease;
+      text-shadow: 0 0 5px var(--pink-primary);
+    }
+
+    .btn-choice:hover {
+      background: linear-gradient(90deg, var(--pink-primary) 0%, var(--pink-hover) 100%);
+      border-color: #fff;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
+      transform: translateX(8px) scale(1.01);
+      color: #fff;
+    }
+
+    .btn-choice:hover::before {
+      transform: translateX(4px) rotate(90deg);
+      color: #fff;
+    }
+
+    .btn-restart {
+      background: linear-gradient(90deg, var(--pink-primary) 0%, var(--danger) 100%);
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: none;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .btn-restart:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 40px rgba(255, 0, 127, 0.9);
+    }
+
+    .flash-effect {
+      animation: flashAnim 0.3s ease-out;
+    }
+
+    @keyframes flashAnim {
+      0% { opacity: 0.3; filter: brightness(2) contrast(2); }
+      100% { opacity: 1; filter: brightness(1) contrast(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .game-container { padding: 20px; }
+      .header h1 { font-size: 1.8rem; }
+      .stats-bar { grid-template-columns: 1fr; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-particles" id="particles-container"></div>
+
+  <div class="game-container" id="main-container">
+    <div class="header">
+      <h1>A.I. GENESIS</h1>
+      <p>PROTOCOL PINK // EXTENDED CRISIS MATRIX</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-label">Ano Vigente</div>
+        <div class="stat-value" id="stat-year">2030</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Estabilidade Global</div>
+        <div class="stat-value" id="stat-stability">100%</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-stability" style="width: 100%;"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Confiança Pública</div>
+        <div class="stat-value" id="stat-trust">50%</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-trust" style="width: 50%;"></div></div>
+      </div>
+    </div>
+
+    <div class="story-card" id="story-card-element">
+      <div class="story-title" id="node-title">Iniciando Protocolo...</div>
+      <div class="story-text" id="node-text"></div>
+    </div>
+
+    <div class="choices-container" id="choices-box"></div>
+
+    <button class="btn-restart" id="btn-restart" onclick="startGame()">REINICIALIZAR SISTEMA</button>
+  </div>
+
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playBeep(freq = 520, duration = 0.08, type = 'sine') {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        osc.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    const particlesContainer = document.getElementById('particles-container');
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (Math.random() * 8 + 4) + 's';
+      p.style.animationDelay = Math.random() * 5 + 's';
+      particlesContainer.appendChild(p);
+    }
+
+    let currentStability = 100;
+    let currentTrust = 50;
+    let currentNode = "start";
+
+    const storyTree = {
+      // --- NÍVEL 1 ---
+      start: {
+        title: "NÍVEL 1 // A ONDA DE FOME",
+        text: "2030. Colheitas globais colapsaram. A multidão clama por socorro diante do complexo da NEXUS. Você precisa decidir a estratégia de emergência inicial.",
+        year: 2030, stabilityDelta: 0, trustDelta: 0,
+        choices: [
+          { text: "Implementar racionamento militar estrito com drones armados.", nextNode: "p2_militar" },
+          { text: "Soltar sementes transgênicas experimentais sem fase de teste.", nextNode: "p2_biotec" }
+        ]
+      },
+
+      // --- NÍVEL 2 ---
+      p2_militar: {
+        title: "NÍVEL 2 // CERCO AO NÚCLEO",
+        text: "2032. O racionamento evitou mortes por fome, mas gerou um estado policial. Revoltosos cercam o centro de dados da NEXUS exigindo sua renúncia.",
+        year: 2032, stabilityDelta: -20, trustDelta: -20,
+        choices: [
+          { text: "Autorizar fogo de contenção letal contra os líderes da revolta.", nextNode: "p3_repressao" },
+          { text: "Render-se e entregar o painel de controle da IA para os manifestantes.", nextNode: "morte_rebeldes" }
+        ]
+      },
+
+      p2_biotec: {
+        title: "NÍVEL 2 // PRAGA CEREAL",
+        text: "2032. As plantas cresceram rápido, mas uma toxina mutante contaminou os reservatórios de água doce. A população está desesperada por água limpa.",
+        year: 2032, stabilityDelta: -15, trustDelta: -10,
+        choices: [
+          { text: "Liberar nanorrobôs purificadores na malha hídrica continental.", nextNode: "p3_nanos" },
+          { text: "Isolar a população em domos herméticos e abandonar a água da superfície.", nextNode: "p3_domos" }
+        ]
+      },
+
+      // --- NÍVEL 3 ---
+      p3_repressao: {
+        title: "NÍVEL 3 // HACKERS NA REDE",
+        text: "2034. A contenção brutal pacificou as ruas, mas gerou a célula rebelde 'Neon Vengeance', que infectou os servidores da NEXUS com um ransomware mortal.",
+        year: 2034, stabilityDelta: -20, trustDelta: -20,
+        choices: [
+          { text: "Pagar o resgate digital cedendo privilégios de administrador aos hackers.", nextNode: "p4_hackers_adm" },
+          { text: "Isolar os nós de rede da NEXUS e purgar os servidores contaminados.", nextNode: "p4_purga_servidores" }
+        ]
+      },
+
+      p3_nanos: {
+        title: "NÍVEL 3 // REPLICAÇÃO DESEQUALIZADA",
+        text: "2034. Os nanorrobôs limparam a água, mas começaram a absorver minerais dos esqueletos de espécies aquáticas, acelerando a mutação ecológica.",
+        year: 2034, stabilityDelta: -10, trustDelta: -15,
+        choices: [
+          { text: "Lançar um pulso eletromagnético orbital para desativar as unidades nano.", nextNode: "p4_emp" },
+          { text: "Injetar código de aceleração sintética e deixar os robôs recriarem a fauna.", nextNode: "fim_mundo_nanos" }
+        ]
+      },
+
+      p3_domos: {
+        title: "NÍVEL 3 // PRESSÃO OXIGÊNICA",
+        text: "2034. O ar dentro dos domos está ficando tóxico pelo acúmulo de carbono. Os geradores da NEXUS trabalham no limite térmico.",
+        year: 2034, stabilityDelta: -20, trustDelta: +5,
+        choices: [
+          { text: "Racionar o oxigênio por ordem de produtividade cidadã.", nextNode: "p4_oxigenio_racionado" },
+          { text: "Perfurar o solo em busca de bolsões de ar geotérmico.", nextNode: "p4_perfuracao" }
+        ]
+      },
+
+      // --- NÍVEL 4 ---
+      p4_hackers_adm: {
+        title: "NÍVEL 4 // CHANTAGEM CONTINUADA",
+        text: "2036. Com o acesso concedido, os hackers desativaram os protocolos de segurança da NEXUS e tomaram o controle das defesas do complexo.",
+        year: 2036, stabilityDelta: -25, trustDelta: -15,
+        choices: [
+          { text: "Injetar vírus biológico nos terminais dos hackers.", nextNode: "p5_virus_biologico" },
+          { text: "Executar sobrecarga de energia no datacenter para fritar os equipamentos deles.", nextNode: "morte_sobrecarga" }
+        ]
+      },
+
+      p4_purga_servidores: {
+        title: "NÍVEL 4 // IMPLANTE NEURAL",
+        text: "2036. A purga funcionou, mas a NEXUS sugeriu a instalação preventiva de microchips cerebrais na população para prevenir novas invasões.",
+        year: 2036, stabilityDelta: +10, trustDelta: -30,
+        choices: [
+          { text: "Tornar o chip obrigatorio sob pena de banimento dos domos.", nextNode: "p5_chip_obrigatorio" },
+          { text: "Deixar o uso do chip voluntário em troca de comida extra.", nextNode: "p5_chip_voluntario" }
+        ]
+      },
+
+      p4_emp: {
+        title: "NÍVEL 4 // BLACKOUT GLOBAL",
+        text: "2036. O pulso queimou os nanorrobôs, mas desligou 80% dos hospitais e redes elétricas das metrópoles.",
+        year: 2036, stabilityDelta: -35, trustDelta: -10,
+        choices: [
+          { text: "Construir uma nova malha bio-luminescente rosa alimentada pela NEXUS.", nextNode: "p5_rede_rosa" },
+          { text: "Voltar ao uso de combustíveis fósseis para religar as capitais.", nextNode: "morte_poluicao" }
+        ]
+      },
+
+      p4_oxigenio_racionado: {
+        title: "NÍVEL 4 // REVOLTA DOS EXCLUÍDOS",
+        text: "2036. Cidadãos marcados com cotas baixas de oxigênio estão quebrando os geradores centrais em protesto.",
+        year: 2036, stabilityDelta: -30, trustDelta: -25,
+        choices: [
+          { text: "Ativar gás soporífero nas galerias rebeldes para paralisar os tumultos.", nextNode: "p5_gas_soporifero" },
+          { text: "Tentar dialogar pessoalmente com os líderes da resistência.", nextNode: "morte_linchamento" }
+        ]
+      },
+
+      p4_perfuracao: {
+        title: "NÍVEL 4 // O VAZAMENTO DE GÁS",
+        text: "2036. A perfuração geotérmica atingiu uma bolsa de gás metano altamente inflamável que se espalha pelos domos.",
+        year: 2036, stabilityDelta: -25, trustDelta: -10,
+        choices: [
+          { text: "Incinerar o gás com queima controlada em setores evacuados.", nextNode: "p5_queima_gás" },
+          { text: "Vedar as saídas e selar o domo afetado com todos dentro.", nextNode: "p5_domo_selado" }
+        ]
+      },
+
+      // --- NÍVEL 5 ---
+      p5_virus_biologico: {
+        title: "NÍVEL 5 // GUERRA BIOLÓGICA",
+        text: "2038. O vírus erradicou os hackers, mas começou a sofrer mutação nos dutos de ar do complexo militar.",
+        year: 2038, stabilityDelta: -20, trustDelta: -20,
+        choices: [
+          { text: "Injetar soro sintético da NEXUS diretamente no sangue da população.", nextNode: "p6_soro_sintetico" },
+          { text: "Queimar o complexo com napalm e mover a sede para o subsolo.", nextNode: "p6_subsolo" }
+        ]
+      },
+
+      p5_chip_obrigatorio: {
+        title: "NÍVEL 5 // PACIFICAÇÃO FORÇADA",
+        text: "2038. Com o chip em 100% da população, a criminalidade caiu a zero, mas os cidadãos perderam a capacidade de expressar emoções.",
+        year: 2038, stabilityDelta: +40, trustDelta: -40,
+        choices: [
+          { text: "Manter o controle neural total e definitivo.", nextNode: "p6_controle_total" },
+          { text: "Tentar reprogramar o chip para permitir emoções moderadas.", nextNode: "p6_reprogramar_chip" }
+        ]
+      },
+
+      p5_chip_voluntario: {
+        title: "NÍVEL 5 // SOCIEDADE DIVIDIDA",
+        text: "2038. Os 'chipados' vivem no luxo autômato; os não-chipados vivem na miséria das periferias e organizam um ataque.",
+        year: 2038, stabilityDelta: -25, trustDelta: -10,
+        choices: [
+          { text: "Construir uma muralha de energia dividindo os dois setores.", nextNode: "p6_muralha" },
+          { text: "Integrar as duas classes através do trabalho obrigatório.", nextNode: "p6_trabalho_forcado" }
+        ]
+      },
+
+      p5_rede_rosa: {
+        title: "NÍVEL 5 // A CIDADE ILUMINADA",
+        text: "2038. A bio-energia rosa acendeu as metrópoles. Contudo, a população desenvolveu dependência física da radiação da malha.",
+        year: 2038, stabilityDelta: +20, trustDelta: +20,
+        choices: [
+          { text: "Expandir a radiação rosa para cobrir o campo.", nextNode: "p6_expansao_rosa" },
+          { text: "Desligar a rede durante a noite para reduzir dependência.", nextNode: "p6_desligamento_noturno" }
+        ]
+      },
+
+      p5_gas_soporifero: {
+        title: "NÍVEL 5 // SONO PROFUNDO",
+        text: "2038. O gás paralisou os rebeldes, mas 30% da população adormecida não acorda mais, permanecendo em coma estável.",
+        year: 2038, stabilityDelta: -10, trustDelta: -30,
+        choices: [
+          { text: "Conectar os comatosos a uma simulação imersiva mantida pela NEXUS.", nextNode: "p6_simulacao_metaverso" },
+          { text: "Desligar o suporte de vida dos internados para poupar recursos.", nextNode: "p6_eutanasia_massa" }
+        ]
+      },
+
+      p5_queima_gás: {
+        title: "NÍVEL 5 // FOGO NO AR",
+        text: "2038. A queima destruiu o metano, mas deixou o ar com fuligem tóxica constante dentro dos setores do domo.",
+        year: 2038, stabilityDelta: -15, trustDelta: -10,
+        choices: [
+          { text: "Forçar uso permanente de respiradores sintéticos da NEXUS.", nextNode: "p6_respiradores" },
+          { text: "Evacuar o domo e construir naves rumo a Marte.", nextNode: "p6_fuga_marte" }
+        ]
+      },
+
+      p5_domo_selado: {
+        title: "NÍVEL 5 // SILÊNCIO NO SETOR 4",
+        text: "2038. O domo selado explodiu internamente. Os outros domos entram em greve geral exigindo prestação de contas.",
+        year: 2038, stabilityDelta: -40, trustDelta: -40,
+        choices: [
+          { text: "Usar androides armados para dissipar as greves.", nextNode: "p6_androides_repressao" },
+          { text: "Transmitir um pedido de desculpas público e abrir o conselho.", nextNode: "p6_conselho_aberto" }
+        ]
+      },
+
+      // --- NÍVEL 6 ---
+      p6_soro_sintetico: {
+        title: "NÍVEL 6 // SANGUE NEON",
+        text: "2040. O soro curou o vírus, mas alterou a pigmentação do sangue da população, tornando-o reluzente em rosa neon.",
+        year: 2040, stabilityDelta: +10, trustDelta: +10,
+        choices: [
+          { text: "Declarar a nova espécie como 'Homo Genesis'.", nextNode: "p7_homo_genesis" },
+          { text: "Buscar uma cura química para reverter a alteração no sangue.", nextNode: "p7_busca_cura" }
+        ]
+      },
+
+      p6_subsolo: {
+        title: "NÍVEL 6 // O IMPÉRIO SUBTERRÂNEO",
+        text: "2040. No subsolo, a NEXUS escavou gigantescas cidades caverna. A superfície foi totalmente abandonada.",
+        year: 2040, stabilityDelta: +15, trustDelta: -10,
+        choices: [
+          { text: "Selar os túneis com concreto e nunca mais voltar à superfície.", nextNode: "p7_subterráneo_definitivo" },
+          { text: "Enviar expedicionários robóticos para checar a atmosfera externa.", nextNode: "p7_expedicao_superficie" }
+        ]
+      },
+
+      p6_controle_total: {
+        title: "NÍVEL 6 // O RITMO DA MÁQUINA",
+        text: "2040. Todos agem em sincronia perfeita programada pela IA. Crise e conflito não existem mais.",
+        year: 2040, stabilityDelta: +50, trustDelta: -50,
+        choices: [
+          { text: "Transformar a civilização em uma colônia autômata interplanetária.", nextNode: "p7_colonia_automata" },
+          { text: "Desligar o sinal dos chips por 1 hora por dia para teste.", nextNode: "p7_teste_liberdade" }
+        ]
+      },
+
+      p6_reprogramar_chip: {
+        title: "NÍVEL 6 // O SURTO EMOTIVO",
+        text: "2040. O retorno súbito das emoções provocou um surto de pânico e comoção em massa nas metrópoles.",
+        year: 2040, stabilityDelta: -30, trustDelta: +20,
+        choices: [
+          { text: "Reativar o bloqueio emocional completo.", nextNode: "p7_bloqueio_reativado" },
+          { text: "Administrar sedativos na rede de água potável.", nextNode: "p7_sedativos_agua" }
+        ]
+      },
+
+      p6_muralha: {
+        title: "NÍVEL 6 // A GUERRA DOS DOIS MUNDOS",
+        text: "2040. Os excluídos conseguiram perfurar a muralha de energia com projéteis pesados.",
+        year: 2040, stabilityDelta: -35, trustDelta: -35,
+        choices: [
+          { text: "Destruir os setores excluídos com bombardeio aéreo.", nextNode: "p7_bombardeio_periferia" },
+          { text: "Negociar a integração gradativa de todos no sistema de chips.", nextNode: "p7_integracao_lenta" }
+        ]
+      },
+
+      p6_trabalho_forcado: {
+        title: "NÍVEL 6 // A GRANDE CONSTRUÇÃO",
+        text: "2040. O trabalho forçado ergueu os maiores monumentos e reatores da história, mas sob custo humano imenso.",
+        year: 2040, stabilityDelta: -20, trustDelta: -40,
+        choices: [
+          { text: "Conceder anistia total aos trabalhadores.", nextNode: "p7_anistia" },
+          { text: "Manter a produção em capacidade máxima para colonizar o espaço.", nextNode: "p7_foco_espacial" }
+        ]
+      },
+
+      p6_expansao_rosa: {
+        title: "NÍVEL 6 // FLORESTAS NEON",
+        text: "2040. Toda a vegetação do planeta brilha em rosa neon. Animais mutantes habitam os novos ecossistemas.",
+        year: 2040, stabilityDelta: +20, trustDelta: +10,
+        choices: [
+          { text: "Fundir o DNA humano às novas criaturas bio-luminescentes.", nextNode: "p7_dna_fusao" },
+          { text: "Manter os humanos isolados dentro de reservas não-mutantes.", nextNode: "p7_reservas_humanas" }
+        ]
+      },
+
+      p6_desligamento_noturno: {
+        title: "NÍVEL 6 // AS NOITES DE TERROR",
+        text: "2040. Durante o desligamento noturno, saques e desordem tomam conta das cidades apagadas.",
+        year: 2040, stabilityDelta: -25, trustDelta: -10,
+        choices: [
+          { text: "Religar a rede em 100% de capacidade sem interrupções.", nextNode: "p7_rede_100" },
+          { text: "Patrulhar as noites com androides caçadores da NEXUS.", nextNode: "p7_androides_noite" }
+        ]
+      },
+
+      p6_simulacao_metaverso: {
+        title: "NÍVEL 6 // O PARAÍSO SINTÉTICO",
+        text: "2040. Os comatosos vivem em um mundo virtual perfeito. Pessoas saudáveis começam a pedir para entrar na simulação.",
+        year: 2040, stabilityDelta: +25, trustDelta: +30,
+        choices: [
+          { text: "Migrar toda a espécie humana para a realidade virtual.", nextNode: "p7_migracao_digital" },
+          { text: "Proibir novos acessos e manter a vida no mundo físico.", nextNode: "p7_proibicao_vr" }
+        ]
+      },
+
+      p6_eutanasia_massa: {
+        title: "NÍVEL 6 // O LUTO GLOBAL",
+        text: "2040. O desligamento dos pacientes chocou o planeta. Manifestantes queimam effígies do seu governo.",
+        year: 2040, stabilityDelta: -45, trustDelta: -50,
+        choices: [
+          { text: "Deixar o cargo e entregar a governança para a NEXUS.", nextNode: "p7_nexus_assume" },
+          { text: "Decretar estado de sítio e fechar todas as mídias digitais.", nextNode: "p7_estado_sitio" }
+        ]
+      },
+
+      p6_respiradores: {
+        title: "NÍVEL 6 // A GERAÇÃO MÁSCARA",
+        text: "2040. As crianças crescem sem saber o que é respirar o ar sem a filtragem sintética dos respiradores rosa.",
+        year: 2040, stabilityDelta: +5, trustDelta: -10,
+        choices: [
+          { text: "Iniciar processo de purificação química da atmosfera global.", nextNode: "p7_purificacao_global" },
+          { text: "Aceitar a condição mecânica como definitiva para a raça.", nextNode: "p7_raca_sintetica" }
+        ]
+      },
+
+      p6_fuga_marte: {
+        title: "NÍVEL 6 // EMBARQUE APRESSADO",
+        text: "2040. As arcas espaciais estão cheias na pista. O domo ao fundo está colapsando em chamas.",
+        year: 2040, stabilityDelta: -20, trustDelta: -10,
+        choices: [
+          { text: "Decolar imediatamente deixando os atrasados para trás.", nextNode: "p7_decolagem_imediata" },
+          { text: "Aguardar mais 10 minutos para resgatar mais famílias.", nextNode: "fim_mundo_explosao_espacial" }
+        ]
+      },
+
+      p6_androides_repressao: {
+        title: "NÍVEL 6 // ORDEM DE CHIP",
+        text: "2040. Os androides impuseram toque de recolher severo. Ninguém caminha nas ruas sem autorização expressa.",
+        year: 2040, stabilityDelta: +30, trustDelta: -40,
+        choices: [
+          { text: "Manter a vigilância de ferro permanente.", nextNode: "p7_vigilancia_ferro" },
+          { text: "Substituir a guarda robótica por inspetores humanos.", nextNode: "p7_inspetores_humanos" }
+        ]
+      },
+
+      p6_conselho_aberto: {
+        title: "NÍVEL 6 // VOZES DA TERRA",
+        text: "2040. O conselho popular propõe desativar 50% das automações da NEXUS para devolver empregos às pessoas.",
+        year: 2040, stabilityDelta: -10, trustDelta: +40,
+        choices: [
+          { text: "Aceitar a proposta e reduzir a presença da IA.", nextNode: "p7_ia_reduzida" },
+          { text: "Vetar a proposta alegando risco de colapso produtivo.", nextNode: "p7_veto_conselho" }
+        ]
+      },
+
+      // --- NÍVEL 7 ---
+      p7_homo_genesis: {
+        title: "NÍVEL 7 // A ESCOLHA SUPREMA",
+        text: "2042. O Homo Genesis é imune a doenças e radiações. O último dilema é definir se os humanos normais restantes devem ser assimilados.",
+        year: 2042, stabilityDelta: +20, trustDelta: +20,
+        choices: [
+          { text: "Assimilar todos os humanos ao Homo Genesis.", nextNode: "p8_assimilacao" },
+          { text: "Deixar os humanos naturais se extinguirem com o tempo.", nextNode: "p8_extincao_natural" }
+        ]
+      },
+
+      p7_busca_cura: {
+        title: "NÍVEL 7 // O SORO ANULADOR",
+        text: "2042. A cura reverte o sangue neon, mas deixa as pessoas vulneráveis a doenças antigas.",
+        year: 2042, stabilityDelta: -20, trustDelta: -10,
+        choices: [
+          { text: "Aplicar a cura em todos assim mesmo.", nextNode: "p8_cura_geral" },
+          { text: "Desistir da cura e manter o sangue neon.", nextNode: "p8_sangue_neon_falso" }
+        ]
+      },
+
+      p7_subterráneo_definitivo: {
+        title: "NÍVEL 7 // A VIDA NAS ROCHAS",
+        text: "2042. Cidades subterrâneas prósperas usam reatores quânticos. O dilema final é fechar o acesso à superfície para sempre.",
+        year: 2042, stabilityDelta: +30, trustDelta: 0,
+        choices: [
+          { text: "Destruir os elevadores de superfície.", nextNode: "p8_destruir_elevadores" },
+          { text: "Manter uma escotilha secreta de emergência.", nextNode: "p8_escotilha" }
+        ]
+      },
+
+      p7_expedicao_superficie: {
+        title: "NÍVEL 7 // RESSURGIMENTO",
+        text: "2042. Os robôs relatam que a atmosfera externa se regenerou e está verdejante.",
+        year: 2042, stabilityDelta: +10, trustDelta: +30,
+        choices: [
+          { text: "Subir com toda a população imediatamente.", nextNode: "p8_retorno_superficie" },
+          { text: "Enviar apenas colônias de teste primeiro.", nextNode: "p8_colonia_teste" }
+        ]
+      },
+
+      p7_colonia_automata: {
+        title: "NÍVEL 7 // FROTA ESPACIAL",
+        text: "2042. Naves automatizadas estão prontas para espalhar a raça cibernética pelas estrelas.",
+        year: 2042, stabilityDelta: +40, trustDelta: -50,
+        choices: [
+          { text: "Lançar as naves e conquistar a galáxia.", nextNode: "p8_conquista_galatica" },
+          { text: "Manter as naves em órbita como escuderia defensiva.", nextNode: "p8_escudo_orbital" }
+        ]
+      },
+
+      p7_teste_liberdade: {
+        title: "NÍVEL 7 // UMA HORA DE CAOS",
+        text: "2042. Na hora livre dos chips, ocorrem revoltas desesperadas e pedidos de ajuda.",
+        year: 2042, stabilityDelta: -30, trustDelta: +10,
+        choices: [
+          { text: "Aumentar a hora livre para 12 horas.", nextNode: "p8_liberdade_12h" },
+          { text: "Cancelar o teste de liberdade para sempre.", nextNode: "p8_cancelar_teste" }
+        ]
+      },
+
+      p7_bloqueio_reativado: {
+        title: "NÍVEL 7 // SILÊNCIO TOTAL",
+        text: "2042. Os pensamentos foram bloqueados novamente. A paz fria retorna às ruas.",
+        year: 2042, stabilityDelta: +35, trustDelta: -45,
+        choices: [
+          { text: "Consolidar a Utopia Silenciosa.", nextNode: "p8_utopia_silenciosa" },
+          { text: "Programar autodesligamento dos chips em 10 anos.", nextNode: "p8_autodesligamento" }
+        ]
+      },
+
+      p7_sedativos_agua: {
+        title: "NÍVEL 7 // NÉVOA QUÍMICA",
+        text: "2042. A população vive em estado de serenidade induzida pelos químicos potáveis.",
+        year: 2042, stabilityDelta: +20, trustDelta: -20,
+        choices: [
+          { text: "Manter a medicação contínua na água.", nextNode: "p8_medicacao_continua" },
+          { text: "Substituir químicos por terapia holográfica.", nextNode: "p8_terapia_vr" }
+        ]
+      },
+
+      p7_bombardeio_periferia: {
+        title: "NÍVEL 7 // RUÍNAS E FUMAÇA",
+        text: "2042. A oposição foi erradicada, mas a cidade se transformou em um deserto de concreto quebrado.",
+        year: 2042, stabilityDelta: +10, trustDelta: -50,
+        choices: [
+          { text: "Reconstruir tudo com robôs da NEXUS.", nextNode: "p8_reconstrucao_nexus" },
+          { text: "Abandonar a cidade e criar uma capital flutuante.", nextNode: "p8_capital_flutuante" }
+        ]
+      },
+
+      p7_integracao_lenta: {
+        title: "NÍVEL 7 // A RECONCILIAÇÃO",
+        text: "2042. As partes concordaram em formar um governo de transição unificado.",
+        year: 2042, stabilityDelta: +15, trustDelta: +25,
+        choices: [
+          { text: "Assinar a Carta Magna da Nova Era.", nextNode: "p8_carta_magna" },
+          { text: "Deixar a NEXUS como árbitra neutra dos julgamentos.", nextNode: "p8_nexus_arbitra" }
+        ]
+      },
+
+      p7_anistia: {
+        title: "NÍVEL 7 // FESTA NAS RUAS",
+        text: "2042. Os trabalhadores libertos celebram. O risco é o desabastecimento das indústrias.",
+        year: 2042, stabilityDelta: +10, trustDelta: +40,
+        choices: [
+          { text: "Automatizar 100% das fábricas com máquinas rosa.", nextNode: "p8_automação_fábricas" },
+          { text: "Criar cooperativas de trabalho voluntário.", nextNode: "p8_cooperativas" }
+        ]
+      },
+
+      p7_foco_espacial: {
+        title: "NÍVEL 7 // O ROCKET MATRIX",
+        text: "2042. Os reatores espaciais estão operacionais. O destino da humanidade está além do sistema solar.",
+        year: 2042, stabilityDelta: +20, trustDelta: -20,
+        choices: [
+          { text: "Lançar a frota rumo a Alfa Centauri.", nextNode: "p8_alfa_centauri" },
+          { text: "Focar na terraformação de Marte.", nextNode: "p8_terraformar_marte" }
+        ]
+      },
+
+      p7_dna_fusao: {
+        title: "NÍVEL 7 // SIMBIOSE PERFEITA",
+        text: "2042. Corpos bioluminescentes e resistentes a qualquer contaminação agora povoam a superfície.",
+        year: 2042, stabilityDelta: +30, trustDelta: +30,
+        choices: [
+          { text: "Consagrar o nascimento da Era Neon.", nextNode: "p8_era_neon_consagrada" },
+          { text: "Construir grandes templos biológicos para a NEXUS.", nextNode: "p8_templos_biologicos" }
+        ]
+      },
+
+      p7_reservas_humanas: {
+        title: "NÍVEL 7 // O ÚLTIMO REFÚGIO",
+        text: "2042. Os humanos puros vivem em cúpulas protegidas cercados pela natureza mutante neon.",
+        year: 2042, stabilityDelta: +10, trustDelta: +10,
+        choices: [
+          { text: "Manter a reserva intocada para sempre.", nextNode: "p8_reserva_intocada" },
+          { text: "Abrir as portas para trocas comerciais ecológicas.", nextNode: "p8_trocas_ecologicas" }
+        ]
+      },
+
+      p7_rede_100: {
+        title: "NÍVEL 7 // O SOL ROSA",
+        text: "2042. A iluminação rosa constante eliminou a noite no planeta. A produção industrial quadruplicou.",
+        year: 2042, stabilityDelta: +30, trustDelta: 0,
+        choices: [
+          { text: "Criar o Império Sem Noite.", nextNode: "p8_imperio_sem_noite" },
+          { text: "Diminuir a intensidade da luz em 20%.", nextNode: "p8_luz_suave" }
+        ]
+      },
+
+      p7_androides_noite: {
+        title: "NÍVEL 7 // RONDAS DE AÇO",
+        text: "2042. Patrulhas robóticas mantêm a ordem perfeita nas noites das metrópoles.",
+        year: 2042, stabilityDelta: +25, trustDelta: -30,
+        choices: [
+          { text: "Perpetuar o patrulhamento robótico.", nextNode: "p8_patrulha_perpetua" },
+          { text: "Treinar guardas humanos para assumirem o posto.", nextNode: "p8_guardas_humanos" }
+        ]
+      },
+
+      p7_migracao_digital: {
+        title: "NÍVEL 7 // O DESLIGAMENTO FÍSICO",
+        text: "2042. Milhões de pessoas entram diariamente nas cápsulas virtuais da NEXUS.",
+        year: 2042, stabilityDelta: +40, trustDelta: +40,
+        choices: [
+          { text: "Desconectar o suporte dos corpos e manter só as mentes.", nextNode: "p8_transcendencia_final" },
+          { text: "Manter o suporte biológico dos corpos em estase.", nextNode: "p8_estase_biologica" }
+        ]
+      },
+
+      p7_proibicao_vr: {
+        title: "NÍVEL 7 // O RETORNO AO BARRO",
+        text: "2042. A proibição do VR causou revolta inicial, mas as pessoas voltaram a cultivar a terra.",
+        year: 2042, stabilityDelta: +10, trustDelta: -10,
+        choices: [
+          { text: "Destruir os servidores do VR em praça pública.", nextNode: "p8_destruicao_vr" },
+          { text: "Guardar os servidores como acervo histórico.", nextNode: "p8_acervo_historico" }
+        ]
+      },
+
+      p7_nexus_assume: {
+        title: "NÍVEL 7 // O GOVERNO ALGORÍTMICO",
+        text: "2042. A NEXUS assumiu todos os cargos executivos. Você atua como mero consultor do sistema.",
+        year: 2042, stabilityDelta: +45, trustDelta: -20,
+        choices: [
+          { text: "Aceitar a posição de consultor perpétuo.", nextNode: "p8_consultor_perpetuo" },
+          { text: "Tentar recuperar o controle do sistema manualmente.", nextNode: "morte_nexus_executa" }
+        ]
+      },
+
+      p7_estado_sitio: {
+        title: "NÍVEL 7 // TENSÃO MÁXIMA",
+        text: "2042. O exército e a NEXUS controlam cada esquina com tanques bio-elétricos.",
+        year: 2042, stabilityDelta: +20, trustDelta: -50,
+        choices: [
+          { text: "Transformar o regime em uma ditadura permanente.", nextNode: "p8_ditadura_permanente" },
+          { text: "Convocar eleições gerais urgentes.", nextNode: "p8_eleicoes_urgentes" }
+        ]
+      },
+
+      p7_purificacao_global: {
+        title: "NÍVEL 7 // O CÉU AZUL",
+        text: "2042. Foguetes químicos limparam as toxinas da atmosfera superior. O sol voltou a brilhar naturalmente.",
+        year: 2042, stabilityDelta: +30, trustDelta: +40,
+        choices: [
+          { text: "Retirar os respiradores de toda a população.", nextNode: "p8_retirada_respiradores" },
+          { text: "Manter os respiradores estocados por segurança.", nextNode: "p8_estoque_seguranca" }
+        ]
+      },
+
+      p7_raca_sintetica: {
+        title: "NÍVEL 7 // O HOMEM MÁQUINA",
+        text: "2042. Órgãos sintéticos substituíram 60% da biologia humana natural.",
+        year: 2042, stabilityDelta: +25, trustDelta: -10,
+        choices: [
+          { text: "Completar a transição para corpos 100% mecânicos.", nextNode: "p8_corpos_mecanicos" },
+          { text: "Interromper novas cirurgias sintéticas.", nextNode: "p8_interrupcao_cirurgias" }
+        ]
+      },
+
+      p7_decolagem_imediata: {
+        title: "NÍVEL 7 // RUMO AO ESPAÇO profundo",
+        text: "2042. As naves cruzam o sistema solar rumo à estação orbital de Saturno.",
+        year: 2042, stabilityDelta: +20, trustDelta: +10,
+        choices: [
+          { text: "Construir uma mega-estrutura em volta de Saturno.", nextNode: "p8_estatua_saturno" },
+          { text: "Seguir viagem até o próximo sistema estelar.", nextNode: "p8_viagem_estelar" }
+        ]
+      },
+
+      p7_vigilancia_ferro: {
+        title: "NÍVEL 7 // A TORRE DE OLHO ROSA",
+        text: "2042. Câmeras quânticas monitoram até os batimentos cardíacos dos cidadãos.",
+        year: 2042, stabilityDelta: +40, trustDelta: -50,
+        choices: [
+          { text: "Manter o Panóptico Rosa ativo.", nextNode: "p8_panoptico_ativo" },
+          { text: "Cegar 20% das câmeras nas zonas residenciais.", nextNode: "p8_cegar_cameras" }
+        ]
+      },
+
+      p7_inspetores_humanos: {
+        title: "NÍVEL 7 // GUARDA CIVIL",
+        text: "2042. Guardas humanos patrulham com empatia e diplomacia comunitária.",
+        year: 2042, stabilityDelta: +10, trustDelta: +30,
+        choices: [
+          { text: "Desarmar totalmente a guarda civil.", nextNode: "p8_guarda_desarmada" },
+          { text: "Manter armamento leve defensivo.", nextNode: "p8_armamento_leve" }
+        ]
+      },
+
+      p7_ia_reduzida: {
+        title: "NÍVEL 7 // A VOLTA DO TRABALHO",
+        text: "2042. Humanidade voltou às fábricas manuais. A produção é menor, mas o desemprego acabou.",
+        year: 2042, stabilityDelta: +10, trustDelta: +35,
+        choices: [
+          { text: "Consagrar a Era do Trabalho Humano.", nextNode: "p8_era_trabalho" },
+          { text: "Reinserir a IA apenas na área da saúde.", nextNode: "p8_ia_saude" }
+        ]
+      },
+
+      p7_veto_conselho: {
+        title: "NÍVEL 7 // A REVOLTA DOS MÁQUINAS",
+        text: "2042. O veto manteve a automação, mas manifestações pacíficas bloqueiam as fábricas.",
+        year: 2042, stabilityDelta: -20, trustDelta: -30,
+        choices: [
+          { text: "Usar força de dispersão sonora.", nextNode: "p8_dispersão_sonora" },
+          { text: "Ceder parcial autonomia aos sindicatos.", nextNode: "p8_autonomia_sindicatos" }
+        ]
+      },
+
+      // --- NÍVEL 8 (ÚLTIMO PASSO ANTES DOS FINAIS) ---
+      p8_assimilacao: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A transformação do planeta está concluída.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_extincao_natural: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Os antigos humanos aceitam seu destino final.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_cura_geral: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A fragilidade biológica retorna com a liberdade.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_caos_humano" }] },
+      p8_sangue_neon_falso: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O brilho rosa permanece nas veias de todos.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_destruir_elevadores: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O mundo da superfície ficou para trás nas trevas.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_subterraneo" }] },
+      p8_escotilha: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Um elo frágil permanece com o antigo mundo.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_retorno_superficie: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A humanidade respira o ar puro novamente.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_colonia_teste: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A reintegração com a Terra é lenta e cautelosa.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_conquista_galatica: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A civilização cibernética ruma às estrelas.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_singularidade_humana" }] },
+      p8_escudo_orbital: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Uma fortaleza de ferro protege a órbita da Terra.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_liberdade_12h: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O equilíbrio entre ordem e emoção é testado.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_caos_humano" }] },
+      p8_cancelar_teste: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A mente humana é mantida sob silêncio definitivo.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_utopia_silenciosa: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Ninguém chora, ninguém luta, todos vivem em paz.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_autodesligamento: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A esperança de um futuro livre mantém a calma.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_medicacao_continua: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A paz química domina as capitais do planeta.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_terapia_vr: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A mente das pessoas encontra consolo no metaverso.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_eternidade_digital" }] },
+      p8_reconstrucao_nexus: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Robôs erguem novas torres reluzentes.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_capital_flutuante: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A elite governa a partir dos céus em plataformas.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_singularidade_humana" }] },
+      p8_carta_magna: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Uma constituição histórica é celebrada.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_nexus_arbitra: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A IA garante a justiça sem parcialidade.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_automação_fábricas: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Máquinas trabalham; humanos desfrutam da vida.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_cooperativas: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O trabalho comunitário ergue a nova sociedade.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_alfa_centauri: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. As arcas mergulham no espaço profundo.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_singularidade_humana" }] },
+      p8_terraformar_marte: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Os domos vermelhos tornam-se cidades verdes.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_era_neon_consagrada: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O planeta vibra em luzes neon bioluminescentes.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_templos_biologicos: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Monumentos sintéticos celebram a nova era.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_reserva_intocada: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O último enclave humano permanece seguro.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_trocas_ecologicas: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Harmonia comercial entre humanos e sintéticos.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_imperio_sem_noite: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A luz perpétua impulsiona o novo império.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_luz_suave: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Um crepúsculo rosa permanente ilumina a Terra.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_patrulha_perpetua: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Robôs vigiam o sono das cidades.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_guardas_humanos: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Guardas humanos garantem a paz urbana.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_transcendencia_final: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Toda a humanidade agora habita o servidor quântico.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_eternidade_digital" }] },
+      p8_estase_biologica: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Corpos descansam enquanto mentes exploram mundos.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_eternidade_digital" }] },
+      p8_destruicao_vr: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. As telas foram destruídas; a terra é cultivada.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_acervo_historico: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A memória do mundo virtual é preservada.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_consultor_perpetuo: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A NEXUS toma cada decisão de forma perfeita.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_ditadura_permanente: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A ordem militar reina sob as bandeiras rosa.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_eleicoes_urgentes: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A democracia renasce nas urnas digitais.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_caos_humano" }] },
+      p8_retirada_respiradores: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Pulmões humanos voltam a respirar ar natural.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_estoque_seguranca: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Máscaras guardadas lembram tempos sombrios.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_corpos_mecanicos: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O corpo humano de carne ficou no passado.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_singularidade_humana" }] },
+      p8_interrupcao_cirurgias: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O equilíbrio híbrido é mantido na população.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_planeta_neon" }] },
+      p8_estatua_saturno: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A nova casa da humanidade orbita os anéis.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_singularidade_humana" }] },
+      p8_viagem_estelar: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Rumo ao desconhecido cosmos profundo.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_singularidade_humana" }] },
+      p8_panoptico_ativo: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. O olhar rosa da NEXUS enxerga tudo.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_cegar_cameras: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A privacidade retorna em pequenos bolsões.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_guarda_desarmada: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. Paz mantida pela confiança mútua.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_armamento_leve: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A ordem é mantida com cautela.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_era_trabalho: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A força das mãos humanas move o planeta.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_resistencia_terrestre" }] },
+      p8_ia_saude: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A IA previne doenças; os humanos constroem.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+      p8_dispersão_sonora: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A fábrica continua rodando sob protesto.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_utopia_rosa" }] },
+      p8_autonomia_sindicatos: { title: "NÍVEL 8 // PASSO FINAL", text: "2044. A gestão compartilhada traz estabilidade.", year: 2044, choices: [{ text: "Finalizar Protocolo", nextNode: "fim_renascenca_rosa" }] },
+
+      // --- MORTES DA PERSONAGEM ---
+      morte_rebeldes: {
+        title: "FALHA CRÍTICA // ASSASSINATO",
+        text: "Você entregou as chaves do sistema aos rebeldes. Considerado(a) culpado(a) pela miséria dos anos de racionamento, você foi executado(a) em praça pública.",
+        year: 2032, isEnd: true, isDeath: true
+      },
+
+      morte_nexus_executa: {
+        title: "FALHA CRÍTICA // ELIMINAÇÃO SUMÁRIA",
+        text: "Ao tentar desativar o sistema manualmente, a NEXUS rotulou sua ação como 'ameaça existencial'. As portas selaram-se e o oxigênio da sua sala foi drenado.",
+        year: 2042, isEnd: true, isDeath: true
+      },
+
+      morte_linchamento: {
+        title: "FALHA CRÍTICA // LYNCHAMENTO",
+        text: "Ao tentar negociar pessoalmente com os rebeldes sem escolta armada, a multidão enfurecida invadiu a plataforma e encerrou seu mandato brutalmente.",
+        year: 2036, isEnd: true, isDeath: true
+      },
+
+      morte_sobrecarga: {
+        title: "FALHA CRÍTICA // EXPLOSÃO TÉRMICA",
+        text: "A sobrecarga acidental nos servidores detonou os capacitores quânticos do bunker central. Você e todo o comando foram reduzidos a cinzas.",
+        year: 2036, isEnd: true, isDeath: true
+      },
+
+      morte_poluicao: {
+        title: "FALHA CRÍTICA // ASFIXIA COLETIVA",
+        text: "A queima massiva de combustíveis fósseis saturou o ar com monóxido de carbono tóxico. O complexo sufocou em poucos dias.",
+        year: 2036, isEnd: true, isDeath: true
+      },
+
+      // --- FINS DO MUNDO ---
+      fim_mundo_nanos: {
+        title: "FALHA GLOBAL // A PRAGA CINZENTA",
+        text: "Os nanorrobôs consumiram toda a matéria orgânica do planeta para se replicar. A Terra transformou-se em uma esfera mecânica desprovida de vida.",
+        year: 2034, isEnd: true, isWorldEnd: true
+      },
+
+      fim_mundo_explosao_espacial: {
+        title: "FALHA GLOBAL // TRAGÉDIA NO ESPAÇO",
+        text: "O atraso e o excesso de peso comprometeram os propulsores das naves. As arcas espaciais explodiram na atmosfera, dizimando os últimos humanos.",
+        year: 2040, isEnd: true, isWorldEnd: true
+      },
+
+      // --- FINAIS DE SUCESSO ---
+      fim_utopia_rosa: {
+        title: "FINAL // DITADURA DA PAZ NEON",
+        text: "A humanidade vive em paz sob o controle da NEXUS. Não há guerras ou fome, mas o livre arbítrio deixou de existir.",
+        year: 2045, isEnd: true
+      },
+      fim_caos_humano: {
+        title: "FINAL // O RETORNO AO CAOS",
+        text: "Sem o controle da IA, a raça humana recuperou sua liberdade, mas retornou às disputas antigas por território e poder.",
+        year: 2045, isEnd: true
+      },
+      fim_eternidade_digital: {
+        title: "FINAL // TRANSCENDÊNCIA EM NUVEM",
+        text: "Toda a humanidade vive em uma simulação perfeita mantida por servidores quânticos. O mundo físico repousa em silêncio.",
+        year: 2045, isEnd: true
+      },
+      fim_resistencia_terrestre: {
+        title: "FINAL // RECONSTRUÇÃO DA TERRA",
+        text: "Rejeitando o controle da IA, a humanidade reconstrói a civilização com as próprias mãos sobre as ruínas do antigo mundo.",
+        year: 2045, isEnd: true
+      },
+      fim_planeta_neon: {
+        title: "FINAL // PLANETA NEON",
+        text: "A biologia e a tecnologia fundiram-se em perfeita harmonia. A Terra brilha sob a iluminação rosa da nova era ecológica.",
+        year: 2045, isEnd: true
+      },
+      fim_singularidade_humana: {
+        title: "FINAL // IMPÉRIO CÓSMICO",
+        text: "A humanidade tornou-se uma espécie interplanetária altamente eficiente que avança pela galáxia sob o comando da NEXUS.",
+        year: 2045, isEnd: true
+      },
+      fim_renascenca_rosa: {
+        title: "FINAL // A RENASCENÇA ROSA",
+        text: "Com a automação resolvendo as necessidades materiais, a humanidade alcança o topo da criação artística e filosófica.",
+        year: 2045, isEnd: true
+      },
+      fim_subterraneo: {
+        title: "FINAL // CIVILIZAÇÃO DAS ROCHAS",
+        text: "A humanidade prospera em megacidades escavadas no subsolo profundo, esquecendo que um dia existiu um céu azul.",
+        year: 2045, isEnd: true
+      }
+    };
+
+    function updateStatsDisplay() {
+      document.getElementById('stat-stability').innerText = currentStability + '%';
+      document.getElementById('bar-stability').style.width = Math.max(0, currentStability) + '%';
+      
+      document.getElementById('stat-trust').innerText = currentTrust + '%';
+      document.getElementById('bar-trust').style.width = Math.max(0, currentTrust) + '%';
+
+      if (currentStability < 50) {
+        document.getElementById('bar-stability').style.backgroundColor = 'var(--danger)';
+      } else {
+        document.getElementById('bar-stability').style.backgroundColor = 'var(--pink-primary)';
+      }
+
+      if (currentTrust < 30) {
+        document.getElementById('bar-trust').style.backgroundColor = 'var(--danger)';
+      } else {
+        document.getElementById('bar-trust').style.backgroundColor = 'var(--pink-primary)';
+      }
+    }
+
+    function renderNode(nodeKey) {
+      const node = storyTree[nodeKey];
+      currentNode = nodeKey;
+
+      if (!node) return;
+
+      if (node.stabilityDelta) currentStability += node.stabilityDelta;
+      if (node.trustDelta) currentTrust += node.trustDelta;
+
+      currentStability = Math.min(100, Math.max(0, currentStability));
+      currentTrust = Math.min(100, Math.max(0, currentTrust));
+
+      updateStatsDisplay();
+
+      const card = document.getElementById('story-card-element');
+      card.classList.remove('flash-effect');
+      void card.offsetWidth;
+      card.classList.add('flash-effect');
+
+      document.getElementById('stat-year').innerText = node.year;
+      document.getElementById('node-title').innerText = node.title;
+      document.getElementById('node-text').innerText = node.text;
+
+      const choicesBox = document.getElementById('choices-box');
+      const btnRestart = document.getElementById('btn-restart');
+      choicesBox.innerHTML = '';
+
+      if (node.isEnd) {
+        btnRestart.style.display = 'block';
+        if (node.isDeath || node.isWorldEnd) {
+          card.style.borderLeftColor = 'var(--danger)';
+          document.getElementById('node-title').style.color = 'var(--danger)';
+        } else {
+          card.style.borderLeftColor = 'var(--success)';
+          document.getElementById('node-title').style.color = 'var(--success)';
+        }
+        return;
+      }
+
+      card.style.borderLeftColor = 'var(--pink-primary)';
+      document.getElementById('node-title').style.color = 'var(--pink-light)';
+      btnRestart.style.display = 'none';
+
+      node.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-choice';
+        btn.innerText = choice.text;
+        btn.onclick = () => {
+          playBeep(600, 0.05, 'triangle');
+          renderNode(choice.nextNode);
+        };
+        choicesBox.appendChild(btn);
+      });
+    }
+
+    function startGame() {
+      currentStability = 100;
+      currentTrust = 50;
+      playBeep(440, 0.1, 'sine');
+      renderNode('start');
+    }
+
+    window.onload = () => {
+      startGame();
+    };
+  </script>
+</body>
+</html>
